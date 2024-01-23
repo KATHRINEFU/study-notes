@@ -1,5 +1,9 @@
 # AWS Cloud Practitioner
 
+[TOC]
+
+
+
 ## Overview
 
 cloud computing: on-demand availability of computer system resources, especially data storage and compute power, without direct active management by the user
@@ -916,3 +920,430 @@ Elastic MapReduce
 
 - sourceDB - ec2 instance running DMS - targetDB
 - Support homo/heterogeneous migrations
+
+![](/Users/katefu/Study/Study Notes/Screenshots/Screenshot 2024-01-15 at 3.24.35 PM.png)
+
+EngYcl0MeNzasIKyqOMOBAh3j$4d
+
+## ECS
+
+elastic container server: launch docker containers on AWS
+
+- you must provision & maintain the infrastructure (EC2 instance)
+- AWS take care of starting/stopping container
+- has integrations with the application load balancer
+
+### Fargate
+
+- no dot provision the infrastructure
+- serverless
+- AWS just run containers for you based on the CPU/RAM you need
+
+### ECR
+
+elastic container registry: private docker registry on AWS, store docker images
+
+### Serverless
+
+- new paradigm that developers don't have to manage servers anymore
+- they just deploy code
+- just deploy functions
+- Initially serverless = FaaS (function as a servers)
+- Pioneered by AWS lambda but now also includes anything that's managed "databases, messaging, storage, etc"
+- does not mean no servers, but you just don't manage/see them
+
+So far in this course: S3, DynamoDB, Fargate, lambda
+
+### Lambda
+
+VS EC2:
+
+![](/Users/katefu/Study/Study Notes/Screenshots/Screenshot 2024-01-16 at 4.10.17 PM.png)
+
+Benefits:
+
+- easy pricing
+  - pay per request and compute time
+  - free tier of 1,000,000 requests and 400,000 GBs of compute time
+
+- integrated with the whole AWS suite of srrvers
+- Event-driven: functions get invoked by AWS when needed
+- integrate with many programming language
+- easy monitering through AWS CloudWatch
+- easy to get more resources per functions (up to 10GB of RAM)
+- increasing RAM will also improve CPU and network
+
+Use cases: create thumbnails for images uploaded to S3, run a serverless cron job
+
+### API Gateway
+
+eg. building a serverless API (public access to Lambda)
+
+### Batch
+
+- fully managed batch processing at any scale
+- efficiently run 100,00s of computing batch jobs on AWS
+- a "bitch" job is a job with a start and end end (opposed to continuous)
+- batch will dynamically launch EC2 instance or Spot instances
+- AWS batch provisions the right amount of compute/memoey
+- you submit or schedule batch jobs and AWS Batch does the rest
+- Batch jobs are defined as Docker images and run on ECS
+- Helpful for cost optimizations and focuing less on the infrastructure
+
+VS Lambda
+
+![Screenshot 2024-01-16 at 4.30.01 PM](/Users/katefu/Study/Study Notes/Screenshots/Screenshot 2024-01-16 at 4.30.01 PM.png)
+
+### Lightsail
+
+- virtual servers, storage, databases and networking
+- low & predictable pricisng
+- simpler alternative to use EC2, RDS, ELB, EBS, S3...
+- great for people with little cloud experience
+- get setup notifications and monitering of your lightsail resources
+- use cases: simple web apps, websites (templatess for WorkPress), dev/test environment
+- high availability but no auto scaling
+
+## Deployments and Managing infrastructure at scale
+
+### CloudFormation
+
+declarative way of outlining your AWS infrastructure for any resources
+
+the CloudFormation creates those for you, in the right order with exact configuration that you specify
+
+Benefits:
+
+- infrastructure as code
+  - no resources are manully created, excellent for control
+  - changes to infrastructure are reviewed through code
+
+- Cost
+  - each resources within the stack is tagged with an identifier so you can easily see how much a stack cost you
+  - estimate the costs of your resources using CloudFormation template
+  - saving strategy: automation delettion of templates at 5PM and recreated at 8am safely
+
+- productivity
+  - Ability to destroy and re-create an infrastructure on the cloud on the fly
+  - Automated generation of diagram for your template
+  - Declarative programming
+
+- don't re-invent the wheel
+  - leverage existing templates on the web
+  - Leverage the documentation
+
+- Support (almost) all AWS resources
+
+CloudFormation Stack Designer: see all the resources and relations, different regions/accounts
+
+### CDK
+
+cloud development kit
+
+- Define your cloud infrastructure using a familiar language
+- the code is compiled into a CloudFormation template
+- you can therefroe deploy infrastructure and application runtime code together
+  - great for lambda functions
+  - great for docker containers in ECS/EKS
+
+### Elastic Beakstalk
+
+A developer centric view of deploying an application on AWS, uses all components we've seen before, but in one view. Still have full control over the configuration. PaaS, free but you pay for the underlying instances.
+
+- managed service
+  - instance config/OS is handled by BeanStalk
+  - deployment strategy is configurable but performed by EB
+  - capacity provisioning
+  - load balancing & auto-scaling
+  - application health-monitering & responsiveness
+
+- just the application code is the responsibility of the developer
+- three architecture model:
+  - Single instance deployment: good for dev
+  - LB + ASG: great for production or pre-production web applications
+  - ASG only: great for non-web apps in production (eg. Workers)
+
+- support many platforms (docker, go, java, ...)
+- Health agent pushes metrics to CloudWatch, checks for app health, publish events
+
+### Code Related
+
+#### CodeDeploy
+
+deploy application automatically: V1 -> V2
+
+- works with EC2 instance
+- Work with On-premises servers
+- hybrid service
+- Servers/instances must be provisioned and confugured ahead of time with CodeDeploy Agent
+
+#### Code Commit
+
+Github's competing product, fully manager, scalable, private, secured, integrated with AWS servers
+
+#### CodeBuild
+
+compiles source code, run test, produces packages that are ready to be deployed, fully managed, serverless, scalable, secure, pay as you go, only pay for the build time
+
+#### Code Pipeline
+
+oschetrate the different steps to have the code automatically pushed to production: code -> build -> test -> provision -> deploy, base for CICD
+
+#### Code Artifact
+
+Storing and retriving dependencies, works with common dependency management tools like maven, cradle, npm, yarn...
+
+Developers and CodeBuild can directly retrieve dependencies from it
+
+#### CodeStar
+
+unified UI to easily manage software developmemt activities in one place
+
+#### Cloud 9
+
+Cloud IDE, edit code in the cloud
+
+### SSM
+
+Systems manager
+
+- helps you manage EC2 and on-premises systems at scale
+- another hybrid AWS service
+- get oprational insights about the state of your infrastructure
+- suite of 10+ products
+- most important fratures are:
+  - **Patching automation for enhanced compliance**
+  - r**un commands across an entire fleet of servers**
+  - store parameter configuration with SSM parameter store
+
+- work for Linux, Windows, MacOS and Raspberry Pi OS
+
+How does it work: install SSM agent on to the system, installed by default on Amazon Linux
+
+#### SSM Session Manager
+
+allow you start a secure shell on your EC2 and on-premise servers
+
+- no SSH access, bastion hosts, or SSH keys are needed
+- no port 22 needed (better security)
+- send session log data to S3 or CLoudWatch logs
+
+### SSM Parameter Store
+
+- secure storage for configuration and secrets
+- api keys, passwords, configurations
+- serverless, scalable, durable, easy SDK
+- control access permissions using IAM
+- version tracking
+
+## Global infrastructure
+
+### Route53
+
+Managed DNS
+
+www.google.com -> 12.34.56.78 == A record (ipv4)
+
+routing policy:
+
+- simple routing policy: no health checks
+- weighted routing policy: distribute requests to multiple EC2 instances
+- latency routing policy: geographically assign
+- failover ...: disaster check, health check on primary, if not, go to failover 
+
+### CloudFront
+
+- content delivery network
+
+- imporve read performace, content is cached at the edge
+
+- 216 point of presence globally (edge locations)
+
+- DDos Protection, integrated with Shield, AWS Web Application Firewall
+
+VS S3 Cross Region Replication
+
+![Screenshot 2024-01-18 at 7.30.57 PM](/Users/katefu/Study/Study Notes/Screenshots/Screenshot 2024-01-18 at 7.30.57 PM.png)
+
+### S3 transfer acceleration
+
+upload file in US ->(public www) edge location -> (private AWS) S3 Bucket (AU)
+
+### AWS Global Acceleration
+
+- Use AWS internal network optimize the route to your application of 60% improvement
+
+- 2 AnyCast IP are created for your application and traffic is sent through edge locations, then send to your application
+- no caching
+- good for HTTP use cases that require static IP addresses
+- good for HTTP use cases that required deterministic, fast regional failover
+
+### AWS Outposts
+
+Used in Hybrid Cloud. Server racks that offers the same AWS infrastructure, services, APIs & tools to build your own application on-premises just as in the cloud. You are responsible for the  Outposts rack physical security. 
+
+Benefits:
+
+- low latency access to on-premises systems
+- local data processing
+- data residency
+- easier migration from on-premises to the cloud
+- fully managed service
+
+### AWS WaveLength
+
+- WaveLength zones are infrastructure deployments embedded within the telecommunication provider's data centers at the edge of 5G network.
+- Bring AWS services to the edge of 5G networks, ultra-low latency. 
+- traffic does not leave Communication Server Provider's (CSP) network
+- High bandwidth and secure connection to the parent AWS region
+- no additional charges or service agreements
+- use cases: smart cities, ML-assisted diabetics, AR/VR.
+
+### AWS Local Zones
+
+Place AWS compute, storage, database and other selected AWS services closer to end users to run latency-sensitive applications
+
+## Message queue
+
+decouple your applications:
+
+- use SQS: queue model
+- use SNS: pub/sub model
+- use Kinesis: real-time data streaming model
+
+### SQS
+
+Simple Queue Service
+
+- Standard queue
+  - oldest aws offering, >100 y
+  - fully managed, serverless, use to decouple services
+  - scales form 1 message per second to 10,000s
+  - default retentino of 4-14 days
+  - no limit how many in tje queue
+  - message are deleted after they're read
+  - low latency <10ms
+  - consumers ahre the work to read messages & scale horizontally
+
+- fifo queues, messages are processed in order by the consumer
+
+### Kinesis
+
+realtime big data streaming
+
+managed service to collect, process, ana analyze realtime data at any scale
+
+### SNS
+
+Simple notification Service
+
+- the event publishers only send messages to one SNS topic
+- as many "event subscribers" as we want to listen to SNS topic notifications
+- each subscribers to the topic will get all the messages
+- subscribers can be SQS, Lambda, Kinesis, Emails, SMS, Http endpoints
+
+### Amazon MQ
+
+- SQS, SNS are cloud native service
+- when migrating to te cloud, instead of re-engineering , we can use Amazon MQ
+- Amazon MQ is a managed message broker service for RabbitMQ, ActiveMQ
+- AmazonMQ does not scale as much as SQS/SNS
+- it runs on servers, can run in Multi-AZ with failover
+- it has both queue feature (SQS) and topic features(SNS)
+
+## Cloud Monitering
+
+### CloudWatch
+
+#### Metrics
+
+- metrics is a variable to monitor
+- have timestamps
+
+#### Important Metrics
+
+- EC2 instance: CPU, status check, network (not ram), default 5min
+- EBS volumes: disk read/writes
+- S3 buckets: bucketSizeBytes, NumberOfObjects, AllRequests
+- Billing: total estimate charge (only in us-east-I)
+- service limit: how much you've been using a service API
+- Custom metrics
+
+#### Alarms
+
+- Auto scaling
+- EC2 actions
+- SNS notifications
+- various options, periods
+- states: OK, INSUFFICIENT_DATA, ALARM
+
+#### Logs
+
+Logs can collect logs from: elastic beanstalk, ECS, AWS Lambda, CloudTrail based on the filter, CloudWatch log agents on EC2 machines and on-premise servers, Route53 log DNS queries.
+
+- enable realtime
+- set retention
+
+### EventBridge
+
+former cloudWatch events
+
+- Schedule: cron jobs
+- event pattern: event rules to react to a service doing something
+- trifger lambda functions
+
+Default / partner/ custom event bus
+
+- schema registry
+- archive events
+- replay archived events
+
+### CloudTrail
+
+- provides governance, compliance and audit for your AWS account
+- enabled by default
+- get a history of events/api calls made within your account by console, sdk, cli, aws service
+- can put logs from CloudTrail into CloudWatch Logs or S3
+- a trail can be applied to all regions or a single region
+- if **a resource is deleted in AWS, investigate CloudTrail first**
+
+### AWS X-Ray
+
+Visual analysis of applications
+
+Solve problems:
+
+- debugging in production
+- log format difffer across applications and log analysis is hard
+- Debugging: one big monolith is easy, distributed services hard
+- No common views of your entire architecture
+
+advantages:
+
+-  **troubleshooting** performance (bottlenecks)
+- understand dependencies in a **microservice** architecture
+- pinpoint service issues
+- review request behavior
+- find errors and exceptions
+- are we meeying time SLA
+- where I am throttled
+- identify users that are impacted
+
+### CodeGuru
+
+An ML-powered service for **automated code reviews** and **application performance recommendations**
+
+- CodeGuru Reviewer: automated reviews for static code analysis
+- CodeGuru profiler: visibility/recommendation about application performance
+  - help understand runtime behavior
+  - Improve performace
+  - decrease compute cost
+  - provide heap memory
+  - anomaly detection
+
+Supported Python and Java
+
+### AWS Health Dashboard
+
+- Service history: show all regions all service health, shows historical information for each day, has RSS feed you can subscribe to
+- Your account: alerts and remediation guidance when aws is experiencing events that may impact you 
