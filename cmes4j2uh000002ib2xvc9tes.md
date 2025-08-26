@@ -4,6 +4,7 @@ seoTitle: "Stanford machine learning cs229  course note"
 datePublished: Tue Aug 26 2025 05:47:04 GMT+0000 (Coordinated Universal Time)
 cuid: cmes4j2uh000002ib2xvc9tes
 slug: stanford-cs2292018-fall-class-notes-1
+cover: https://cdn.hashnode.com/res/hashnode/image/stock/unsplash/M_vaMr-2P7o/upload/b524b002157621e110ef14542ec0d5be.jpeg
 tags: machine-learning, computer-science, stanford, study
 
 ---
